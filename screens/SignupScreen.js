@@ -1,17 +1,40 @@
 import React from "react";
 import { useState } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import { Avatar, TextInput, Button } from "react-native-paper";
-
+import { Avatar, TextInput, Button, Modal, List } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { addUsers } from "../store/actions/signup";
 const SignupScreen = (props) => {
-  const [fulname, setFullName] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [fullname, setFullName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const navigateUserLoginScreen = () => {
-    props.navigation.navigate("Sign In");
+
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.usersState.users);
+
+  const showModal = () => setVisible(true);
+  const resetForm = () => {
+    setFullName("");
+    setUserName("");
+    setPassword("");
   };
+
   const navigateWellcomeScreen = () => {
     props.navigation.navigate("Wellcome");
+  };
+
+  const submitForm = () => {
+    const user = {
+      id: Math.random().toString(),
+      fullname,
+      username,
+      password,
+    };
+    dispatch(addUsers(user));
+
+    console.log(user);
+    resetForm();
   };
   return (
     <ImageBackground
@@ -41,7 +64,7 @@ const SignupScreen = (props) => {
       <View style={styles.form}>
         <TextInput
           label="Full Name"
-          value={fulname}
+          value={fullname}
           onChangeText={(fullname) => setFullName(fullname)}
           style={{
             margin: 10,
@@ -51,7 +74,7 @@ const SignupScreen = (props) => {
         <TextInput
           label="User Name"
           value={username}
-          onChangeText={(username) => setUserName(usename)}
+          onChangeText={(username) => setUserName(username)}
           style={{
             margin: 10,
             backgroundColor: "transprant",
@@ -70,7 +93,7 @@ const SignupScreen = (props) => {
           <Button
             icon="login"
             mode="contained"
-            onPress={navigateUserLoginScreen}
+            onPress={submitForm}
             style={{
               borderRadius: 25,
               height: 50,
@@ -110,7 +133,48 @@ const SignupScreen = (props) => {
             </Text>
           </Button>
         </View>
+
+        <View style={styles.Button}>
+          <Button
+            icon="close"
+            mode="contained"
+            onPress={showModal}
+            style={{
+              borderRadius: 25,
+              height: 50,
+              backgroundColor: "blue",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                color: "white",
+                letterSpacing: 2,
+              }}
+            >
+              View Users
+            </Text>
+          </Button>
+        </View>
       </View>
+      <Modal
+        visible={visible}
+        contentContainerStyle={{
+          padding: 20,
+          margin: 20,
+          backgroundColor: "#fff",
+        }}
+      >
+        {users.map((user) => {
+          return (
+            <List.Item
+              key={user.id}
+              title={user.username}
+              description={user.password}
+            />
+          );
+        })}
+      </Modal>
     </ImageBackground>
   );
 };

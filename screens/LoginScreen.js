@@ -41,7 +41,7 @@ const LoginScreen = (props) => {
         <TextInput
           label="User Name"
           value={username}
-          onChangeText={(username) => setUserName(usename)}
+          onChangeText={(username) => setUserName(username)}
           style={{
             margin: 10,
             backgroundColor: "transprant",
