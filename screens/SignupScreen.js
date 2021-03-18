@@ -2,16 +2,19 @@ import React from "react";
 import { useState } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { Avatar, TextInput, Button, Modal, List } from "react-native-paper";
+import { useTheme } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { addUsers } from "../store/actions/signup";
+import { addUsersToFirebase, getAllUsers } from "../store/actions/signup";
+
 const SignupScreen = (props) => {
+  const { colors } = useTheme();
+
   const [visible, setVisible] = useState(false);
   const [fullname, setFullName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.usersState.users);
 
   const showModal = () => setVisible(true);
   const resetForm = () => {
@@ -26,16 +29,21 @@ const SignupScreen = (props) => {
 
   const submitForm = () => {
     const user = {
-      id: Math.random().toString(),
       fullname,
       username,
       password,
     };
-    dispatch(addUsers(user));
-
-    console.log(user);
+    dispatch(addUsersToFirebase(user));
     resetForm();
+    console.log(user);
   };
+
+  const users = useSelector((state) => state.usersState.users);
+
+  React.useEffect(() => {
+    dispatch(getAllUsers());
+  }, []);
+
   return (
     <ImageBackground
       source={require("../assets/images/background.png")}

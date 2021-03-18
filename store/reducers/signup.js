@@ -1,4 +1,4 @@
-import { ADD_USERS } from "../actions/signup";
+import { ADD_USERS, GET_USERS } from "../actions/signup";
 const initialState = {
   users: [],
 };
@@ -11,6 +11,13 @@ const usersReducer = (state = initialState, action) => {
         ...state,
         users: updateUsers,
       };
+
+    case GET_USERS:
+      return {
+        ...state,
+        users: action.payload,
+      };
+
     default:
       return state;
   }
