@@ -1,41 +1,31 @@
 import React from "react";
 import { useState } from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, Alert } from "react-native";
 import { Avatar, TextInput, Button, Modal, List } from "react-native-paper";
-import { useTheme } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { addUsersToFirebase, getAllUsers } from "../store/actions/signup";
+import { useForm, Controller } from "react-hook-form";
+import { useEffect } from "react";
 
 const SignupScreen = (props) => {
-  const { colors } = useTheme();
-
   const [visible, setVisible] = useState(false);
-  const [fullname, setFullName] = useState("");
-  const [username, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  // const [fullname, setFullName] = useState("");
+  // const [username, setUserName] = useState("");
+  // const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
 
   const showModal = () => setVisible(true);
-  const resetForm = () => {
-    setFullName("");
-    setUserName("");
-    setPassword("");
-  };
+  const hideModal = () => setVisible(false);
+
+  // const resetForm = () => {
+  //   setFullName("");
+  //   setUserName("");
+  //   setPassword("");
+  // };
 
   const navigateWellcomeScreen = () => {
     props.navigation.navigate("Wellcome");
-  };
-
-  const submitForm = () => {
-    const user = {
-      fullname,
-      username,
-      password,
-    };
-    dispatch(addUsersToFirebase(user));
-    resetForm();
-    console.log(user);
   };
 
   const users = useSelector((state) => state.usersState.users);
@@ -44,6 +34,21 @@ const SignupScreen = (props) => {
     dispatch(getAllUsers());
   }, []);
 
+  const { control, handleSubmit, errors } = useForm();
+
+  const submitForm = (user) => {
+    // const user = {
+    //   fullname,
+    //   username,
+    //   password,
+    // };
+    !Object.keys(errors).length > 0 && dispatch(addUsersToFirebase(user));
+    // resetForm();
+    Alert.alert(
+      "User",
+      `Username: ${user.userName} Password: ${user.password}`
+    );
+  };
   return (
     <ImageBackground
       source={require("../assets/images/background.png")}
@@ -70,38 +75,66 @@ const SignupScreen = (props) => {
         </Text>
       </View>
       <View style={styles.form}>
-        <TextInput
-          label="Full Name"
-          value={fullname}
-          onChangeText={(fullname) => setFullName(fullname)}
-          style={{
-            margin: 10,
-            backgroundColor: "transprant",
-          }}
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <TextInput
+              label="Full Name"
+              onBlur={onBlur}
+              onChangeText={(value) => onChange(value)}
+              style={{
+                margin: 10,
+                backgroundColor: "transprant",
+              }}
+            />
+          )}
+          name="fullName"
+          rules={{ required: true }}
+          defaultValue=""
         />
-        <TextInput
-          label="User Name"
-          value={username}
-          onChangeText={(username) => setUserName(username)}
-          style={{
-            margin: 10,
-            backgroundColor: "transprant",
-          }}
+        {errors.fullName && <Text style={styles.etxt}>FullName required.</Text>}
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <TextInput
+              label="User Name"
+              onBlur={onBlur}
+              onChangeText={(value) => onChange(value)}
+              style={{
+                margin: 10,
+                backgroundColor: "transprant",
+              }}
+            />
+          )}
+          name="userName"
+          rules={{ required: true }}
+          defaultValue=""
         />
-        <TextInput
-          label="Password"
-          value={password}
-          onChangeText={(password) => setPassword(password)}
-          style={{
-            margin: 10,
-            backgroundColor: "transprant",
-          }}
+        {errors.userName && <Text style={styles.etxt}>UserName required.</Text>}
+
+        <Controller
+          control={control}
+          render={({ onChange, onBlur, value }) => (
+            <TextInput
+              label="Password"
+              onBlur={onBlur}
+              onChangeText={(value) => onChange(value)}
+              style={{
+                margin: 10,
+                backgroundColor: "transprant",
+              }}
+            />
+          )}
+          name="password"
+          rules={{ required: true }}
+          defaultValue=""
         />
+        {errors.password && <Text style={styles.etxt}>Password required.</Text>}
         <View style={styles.Button}>
           <Button
             icon="login"
             mode="contained"
-            onPress={submitForm}
+            onPress={handleSubmit(submitForm)}
             style={{
               borderRadius: 25,
               height: 50,
@@ -165,19 +198,21 @@ const SignupScreen = (props) => {
           </Button>
         </View>
       </View>
+
       <Modal
         visible={visible}
+        onDismiss={hideModal}
         contentContainerStyle={{
-          padding: 20,
-          margin: 20,
+          padding: 10,
+          margin: 10,
           backgroundColor: "#fff",
         }}
       >
-        {users.map((user) => {
+        {users.map((user, index) => {
           return (
             <List.Item
-              key={user.id}
-              title={user.username}
+              key={index}
+              title={user.userName}
               description={user.password}
             />
           );
@@ -194,7 +229,7 @@ const styles = StyleSheet.create({
   },
   screen: {
     flex: 1,
-    marginTop: 50,
+    marginTop: 20,
     justifyContent: "flex-start",
     alignItems: "center",
   },
@@ -206,6 +241,9 @@ const styles = StyleSheet.create({
   Button: {
     padding: 5,
     margin: 5,
+  },
+  etxt: {
+    color: "red",
   },
 });
 export default SignupScreen;

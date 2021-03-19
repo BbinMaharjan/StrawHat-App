@@ -1,16 +1,49 @@
 import React from "react";
 import { useState } from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, Alert } from "react-native";
 import { Avatar, TextInput, Button } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllUsers } from "../store/actions/signup";
 
 const LoginScreen = (props) => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigateLoginScreen = () => {
+    props.navigation.navigate("Sign In");
+  };
+
   const navigateUserHomeScreen = () => {
     props.navigation.navigate("Home");
   };
   const navigateSignUp = () => {
     props.navigation.navigate("Sign Up");
+  };
+
+  const dispatch = useDispatch();
+
+  const users = useSelector((state) => state.usersState.users);
+  const login = async () => {
+    await dispatch(getAllUsers());
+    const us = users.filter(
+      (user) => user.userName === username && user.password === password
+    );
+    if (us && Object.keys(us)?.length > 0) {
+      navigateUserHomeScreen();
+    } else {
+      Alert.alert("User not found.", `Do you want to sign up?`, [
+        {
+          text: "Sign Up",
+          onPress: () => navigateSignUp(),
+        },
+        {
+          text: "Cancle",
+          onPress: () => navigateLoginScreen(),
+        },
+      ]);
+    }
+    setUserName("");
+    setPassword("");
   };
   return (
     <ImageBackground
@@ -60,7 +93,7 @@ const LoginScreen = (props) => {
           <Button
             icon="login"
             mode="contained"
-            onPress={navigateUserHomeScreen}
+            onPress={login}
             style={{
               borderRadius: 25,
               height: 50,

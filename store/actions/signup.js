@@ -17,13 +17,13 @@ export const getUsers = (users) => ({
 
 export const addUsersToFirebase = (user) => async (dispatch) => {
   const response = await axios.post(`${BASE_URL}/users.json`, user);
-  console.log(response.data);
+  user.id = response.name;
+  dispatch(addUsers(user));
 };
 
 export const getAllUsers = () => {
   return async (dispatch) => {
     const response = await axios.get(`${BASE_URL}/users.json`);
-    console.log("BEFORE", response.data);
 
     const allUserIds = Object.keys(response.data);
     const users = allUserIds.map((id) => {
