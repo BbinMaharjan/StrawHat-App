@@ -1,6 +1,13 @@
 import React from "react";
 import { useState } from "react";
-import { View, Text, StyleSheet, ImageBackground, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Alert,
+  SafeAreaView,
+} from "react-native";
 import { Avatar, TextInput, Button } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../store/actions/signup";
@@ -50,7 +57,7 @@ const LoginScreen = (props) => {
       source={require("../assets/images/background.png")}
       style={styles.image}
     >
-      <View style={styles.screen}>
+      <SafeAreaView style={styles.screen}>
         <Avatar.Image
           size={160}
           style={{
@@ -69,7 +76,7 @@ const LoginScreen = (props) => {
         >
           Hello User!!!
         </Text>
-      </View>
+      </SafeAreaView>
       <View style={styles.form}>
         <TextInput
           label="User Name"
@@ -144,13 +151,12 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   screen: {
-    flex: 1,
     marginTop: 50,
     justifyContent: "flex-start",
     alignItems: "center",
   },
   form: {
-    flex: 2,
+    flex: 1,
     padding: 10,
     flexDirection: "column",
   },

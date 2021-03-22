@@ -1,6 +1,14 @@
 import React from "react";
 import { useState } from "react";
-import { View, Text, StyleSheet, ImageBackground, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Alert,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
 import { Avatar, TextInput, Button, Modal, List } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { addUsersToFirebase, getAllUsers } from "../store/actions/signup";
@@ -74,7 +82,7 @@ const SignupScreen = (props) => {
           Hello There!!!
         </Text>
       </View>
-      <View style={styles.form}>
+      <SafeAreaView style={styles.form}>
         <Controller
           control={control}
           render={({ onChange, onBlur, value }) => (
@@ -197,7 +205,7 @@ const SignupScreen = (props) => {
             </Text>
           </Button>
         </View>
-      </View>
+      </SafeAreaView>
 
       <Modal
         visible={visible}
@@ -205,18 +213,21 @@ const SignupScreen = (props) => {
         contentContainerStyle={{
           padding: 10,
           margin: 10,
+          height: "50%",
           backgroundColor: "#fff",
         }}
       >
-        {users.map((user, index) => {
-          return (
-            <List.Item
-              key={index}
-              title={user.userName}
-              description={user.password}
-            />
-          );
-        })}
+        <ScrollView>
+          {users.map((user, index) => {
+            return (
+              <List.Item
+                key={index}
+                title={user.userName}
+                description={user.password}
+              />
+            );
+          })}
+        </ScrollView>
       </Modal>
     </ImageBackground>
   );
@@ -228,13 +239,12 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   screen: {
-    flex: 1,
-    marginTop: 20,
+    marginTop: 10,
     justifyContent: "flex-start",
     alignItems: "center",
   },
   form: {
-    flex: 2,
+    flex: 1,
     padding: 10,
     flexDirection: "column",
   },
